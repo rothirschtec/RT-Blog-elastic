@@ -10,16 +10,19 @@ id="${hd}filebeat-latest/"
 echo "Install configuration files"
 rsync -a ${id}fields.yml ${id}filebeat.reference.yml ${id}filebeat.yml ${id}modules.d /etc/filebeat/
 rsync -a ${id}LICENSE.txt ${id}kibana ${id}module ${id}NOTICE.txt ${id}README.md /usr/share/filebeat/
-rsync -a ${hd}filebeat.service /lib/systemd/system/
-rsync -a ${hd}bin-filebeat /usr/bin/filebeat
+rsync -a ${hd}RT-Blog-elastic/filebeat.service /lib/systemd/system/
+rsync -a ${hd}RT-Blog-elastic/bin-filebeat /usr/bin/filebeat
 
-if [ -f 
-rsync -a ${hd}my-filebeat.yml /etc/filebeat/filebeat.yml
-rsync -a ${hd}my-iptables.yml /etc/filebeat/modules.d/iptables.yml
-
-rsync -a ${hd}init.d-filebeat /etc/init.d/filebeat
+rsync -a ${hd}RT-Blog-elastic/init.d-filebeat /etc/init.d/filebeat
 chmod +x /etc/init.d/filebeat
 
+# # #
+if [ -f ${hd}my-filebeat.yml ]; then
+    rsync -a ${hd}my-filebeat.yml /etc/filebeat/filebeat.yml
+fi
+if [ -f ${hd}my-iptables.yml ]; then
+    rsync -a ${hd}my-iptables.yml /etc/filebeat/modules.d/iptables.yml
+fi
 
 echo "Install executable"
 mkdir -p /usr/share/filebeat/bin
