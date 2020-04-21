@@ -23,6 +23,7 @@ fi
 if [ -f ${hd}my-iptables.yml ]; then
     rsync -a ${hd}my-iptables.yml /etc/filebeat/modules.d/iptables.yml
 fi
+chown -R root: /etc/filebeat/
 
 echo "Install executable"
 mkdir -p /usr/share/filebeat/bin
