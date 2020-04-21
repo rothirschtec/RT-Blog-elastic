@@ -26,8 +26,8 @@ fi
 
 echo "Install executable"
 mkdir -p /usr/share/filebeat/bin
-read -p "arm (Y) arm64 (n)" arch
-if [[ $arch == [nN] ]]; then
+read -p "arm (A) arm64 (64): " arch
+if [[ $arch == "64" ]]; then
     rsync -a ${hd}filebeat-arm64 /usr/share/filebeat/bin/filebeat
 else
     rsync -a ${hd}filebeat-arm /usr/share/filebeat/bin/filebeat
