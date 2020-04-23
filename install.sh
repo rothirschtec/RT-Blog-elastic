@@ -27,6 +27,7 @@ do
     		rsync -a ${config} /etc/filebeat/modules.d/${config##*/my-}
 	fi
 done
+chown -R root: /etc/filebeat/
 
 # # #
 echo "Install executable"
@@ -37,33 +38,35 @@ if [[ $arch == "64" ]]; then
 else
     rsync -a ${hd}filebeat-arm /usr/share/filebeat/bin/filebeat
 fi
+chown -R root: /usr/share/filebeat/
 
 
 # # # 
 echo -e "\nEnable filebeat"
 systemctl enable filebeat.service
 
-# # #
-echo -e "\nChoose the modules you want to use."
 
-for module in "iptables" "system" "apache"
-do
-	read -p "$module (yN): " service
-	if [[ $service == [yY] ]]; then
-	    echo "Configure iptables"
-	    filebeat modules enable $module
-	fi
-done
+if [ -f ${hd}modules.list ]; then
+	# # #
+	echo -e "\nChoose the modules you want to use."
+
+	for module in $(cat ${hd}modules.list)
+	do
+		read -p "$module (yN): " service
+		if [[ $service == [yY] ]]; then
+		    echo "Configure iptables"
+		    filebeat modules enable $module
+		fi
+	done
+fi
 
 # # # 
 echo -e "\nRestart filebeat"
-chown -R root: /etc/filebeat/
-chown -R root: /usr/share/filebeat/
 service filebeat restart
 
 
-# # #
-echo -e "\nAdd logs prefix to you iptables rules"
-echo '$IPT -A INPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "
-$IPT -A OUTPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "
-$IPT -A FORWARD -m state --state NEW -j LOG --log-prefix="[netfilter] "'
+if [ -f ${hd}iptables.info ]; then
+	# # #
+	echo -e "\nAdd logs prefix to you iptables rules"
+	cat ${hd}iptables.info
+fi 
