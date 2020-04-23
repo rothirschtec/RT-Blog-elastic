@@ -17,14 +17,19 @@ rsync -a ${hd}RT-Blog-elastic/init.d-filebeat /etc/init.d/filebeat
 chmod +x /etc/init.d/filebeat
 
 # # #
+echo "Copy modules config files"
 if [ -f ${hd}my-filebeat.yml ]; then
     rsync -a ${hd}my-filebeat.yml /etc/filebeat/filebeat.yml
 fi
-if [ -f ${hd}my-iptables.yml ]; then
-    rsync -a ${hd}my-iptables.yml /etc/filebeat/modules.d/iptables.yml
-fi
+for config in ${hd}my-*.yml
+do
+	if [[ ! $config =~ "my-filebeat.yml" ]]; then
+    		rsync -a ${config}/etc/filebeat/modules.d/iptables.yml
+	fi
+done
 chown -R root: /etc/filebeat/
 
+# # #
 echo "Install executable"
 mkdir -p /usr/share/filebeat/bin
 read -p "arm (A) arm64 (64): " arch
@@ -33,7 +38,6 @@ if [[ $arch == "64" ]]; then
 else
     rsync -a ${hd}filebeat-arm /usr/share/filebeat/bin/filebeat
 fi
-
 
 # # # 
 echo "Enable filebeat"
@@ -73,6 +77,6 @@ service filebeat restart
 
 # # #
 echo Add logs prefix to you iptables rules
-echo '$IPT -A INPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "\
-$IPT -A OUTPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "\
+echo '$IPT -A INPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "
+$IPT -A OUTPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "
 $IPT -A FORWARD -m state --state NEW -j LOG --log-prefix="[netfilter] "'
