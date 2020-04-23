@@ -39,44 +39,32 @@ else
     rsync -a ${hd}filebeat-arm /usr/share/filebeat/bin/filebeat
 fi
 
+
 # # # 
-echo "Enable filebeat"
+echo -e "\nEnable and restart filebeat"
 systemctl enable filebeat.service
 systemctl restart filebeat.service
 
-
 # # #
-read -p "iptables (yN)" iptables
-if [[ $iptables == [yY] ]]; then
-    echo "Configure iptables"
-    filebeat modules enable iptables
-fi
+echo -e "\nChoose the modules you want to use."
 
-# # #
-read -p "system (yN)" system
-if [[ $system == [yY] ]]; then
-    echo "Configure system"
-    filebeat modules enable system
-fi
-
-# # #
-read -p "apache (yN)" apache
-if [[ $apache == [yY] ]]; then
-    echo "Configure apache"
-    filebeat modules enable apache
-fi
+for module in "iptables" "system" "apache"
+do
+	read -p "$module (yN): " service
+	if [[ $service == [yY] ]]; then
+	    echo "Configure iptables"
+	    filebeat modules enable $module
+	fi
+	
+done
 
 # # # 
-echo "Restart filebeat"
+echo -e "\nRestart filebeat"
 service filebeat restart
 
-# # #
-#echo Configure rsyslog
-#echo ':msg,contains, "[netfilter] " /var/log/iptables.log' > /etc/rsyslog.d/iptables.conf
-#service rsyslog restart
 
 # # #
-echo Add logs prefix to you iptables rules
+echo -e \nAdd logs prefix to you iptables rules
 echo '$IPT -A INPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "
 $IPT -A OUTPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "
 $IPT -A FORWARD -m state --state NEW -j LOG --log-prefix="[netfilter] "'
