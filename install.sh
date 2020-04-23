@@ -27,7 +27,6 @@ do
     		rsync -a ${config} /etc/filebeat/modules.d/${config##*/my-}
 	fi
 done
-chown -R root: /etc/filebeat/
 
 # # #
 echo "Install executable"
@@ -41,9 +40,8 @@ fi
 
 
 # # # 
-echo -e "\nEnable and restart filebeat"
+echo -e "\nEnable filebeat"
 systemctl enable filebeat.service
-systemctl restart filebeat.service
 
 # # #
 echo -e "\nChoose the modules you want to use."
@@ -55,16 +53,17 @@ do
 	    echo "Configure iptables"
 	    filebeat modules enable $module
 	fi
-	
 done
 
 # # # 
 echo -e "\nRestart filebeat"
+chown -R root: /etc/filebeat/
+chown -R root: /usr/share/filebeat/
 service filebeat restart
 
 
 # # #
-echo -e \nAdd logs prefix to you iptables rules
+echo -e "\nAdd logs prefix to you iptables rules"
 echo '$IPT -A INPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "
 $IPT -A OUTPUT -m state --state NEW -j LOG --log-prefix="[netfilter] "
 $IPT -A FORWARD -m state --state NEW -j LOG --log-prefix="[netfilter] "'
