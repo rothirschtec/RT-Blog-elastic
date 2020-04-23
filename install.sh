@@ -24,7 +24,7 @@ fi
 for config in ${hd}my-*.yml
 do
 	if [[ ! $config =~ "my-filebeat.yml" ]]; then
-    		rsync -a ${config}/etc/filebeat/modules.d/iptables.yml
+    		rsync -a ${config} /etc/filebeat/modules.d/${config##*/my-}
 	fi
 done
 chown -R root: /etc/filebeat/
