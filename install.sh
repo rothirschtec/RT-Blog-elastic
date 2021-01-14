@@ -31,10 +31,10 @@ chown -R root: /etc/filebeat/
 
 # # #
 echo "Install executable"
+mkdir -p /usr/share/filebeat/bin
 if [[ $(uname -a) =~ "armv7l GNU/Linux" ]]; then
     rsync -a ${hd}filebeat-arm /usr/share/filebeat/bin/filebeat
 else
-	mkdir -p /usr/share/filebeat/bin
 	read -p "arm (A) arm64 (64): " arch
 	if [[ $arch == "64" ]]; then
 	    rsync -a ${hd}filebeat-arm64 /usr/share/filebeat/bin/filebeat
