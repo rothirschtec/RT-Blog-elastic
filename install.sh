@@ -66,6 +66,7 @@ fi
 
 # # # 
 echo -e "\nRestart filebeat"
+filebeat setup -e
 service filebeat restart
 
 
